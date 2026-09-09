@@ -17,7 +17,7 @@ jobs:
       with:
         node-version: 20
 
-    - name: Set up JDK 17
+    - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
@@ -40,10 +40,23 @@ jobs:
         }' > capacitor.config.json
 
     - name: Add Android Platform
-      run: npx cap add android || true # Si ya existe la carpeta, continuará sin trabarse
+      run: npx cap add android || true
 
     - name: Capacitor Sync
       run: npx cap sync
+
+    - name: Fix Kotlin Duplicate Classes Error
+      run: |
+        # Agrega una regla en build.gradle para obligar a usar la librería unificada de Kotlin y evitar duplicados
+        echo "configurations.all {
+            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                if (details.requested.group == 'org.jetbrains.kotlin') {
+                    if (details.requested.name.startsWith('kotlin-stdlib-jdk')) {
+                        details.useTarget 'org.jetbrains.kotlin:kotlin-stdlib:' + details.requested.version
+                    }
+                }
+            }
+        }" >> android/app/build.gradle
 
     - name: Build APK with Gradle
       run: |
