@@ -16,7 +16,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 20
-        # Quitamos la línea de cache para evitar que pida el archivo lock
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -25,13 +24,26 @@ jobs:
         java-version: '17'
 
     - name: Install Dependencies
-      run: npm install # Volvemos a install que es más flexible
+      run: |
+        npm install
+        npm install @capacitor/core @capacitor/cli @capacitor/android
 
     - name: Build Web App (Vite)
       run: npm run build
 
+    - name: Create Capacitor Config File
+      run: |
+        echo '{
+          "appId": "com.companeros.app",
+          "appName": "Compañeros",
+          "webDir": "dist"
+        }' > capacitor.config.json
+
+    - name: Add Android Platform
+      run: npx cap add android || true # Si ya existe la carpeta, continuará sin trabarse
+
     - name: Capacitor Sync
-      run: npx @capacitor/cli sync # Especificamos el paquete completo para evitar fallos de comando
+      run: npx cap sync
 
     - name: Build APK with Gradle
       run: |
