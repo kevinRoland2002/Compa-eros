@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main ] # Se ejecuta cada vez que subes cambios a la rama main
+    branches: [ main, master ] # Se ejecutará en main o master automáticamente
 
 jobs:
   build:
@@ -16,6 +16,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 20
+        cache: 'npm' # Agregamos caché para acelerar futuras compilaciones
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -24,13 +25,13 @@ jobs:
         java-version: '17'
 
     - name: Install Dependencies
-      run: npm install
+      run: npm ci # Usa 'npm ci' que es más estricto y limpio para servidores de integración continua
 
     - name: Build Web App (Vite)
       run: npm run build
 
     - name: Capacitor Sync
-      run: npx cap sync
+      run: npx --no-install cap sync # Forzamos a npx a usar el paquete ya instalado localmente
 
     - name: Build APK with Gradle
       run: |
