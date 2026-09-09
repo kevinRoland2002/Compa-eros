@@ -1,0 +1,11 @@
+{
+  "title": "Compañeros",
+  "description": "Easily create and customize APK files for Android applications, empowering developers and businesses to streamline their app deployment process.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
